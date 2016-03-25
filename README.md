@@ -1,0 +1,3 @@
+- Clone
+- In your working directory `npm install --save-dev babel-preset-es2015`
+- node <durango-builder>\main.js -c <css> -j <js> -t <templates> -d <output>
