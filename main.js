@@ -1,18 +1,18 @@
 'use strict';
 
-var argv = require('minimist')(process.argv.slice(2));
-var chokidar = require('chokidar');
-var fs = require('fs');
-var colors = require('colors');
-var path = require('path');
-var jade = require('jade');
-var sass = require('node-sass');
-var babel = require('babel-core');
-var lr = require('livereload');
+const argv = require('minimist')(process.argv.slice(2));
+const chokidar = require('chokidar');
+const fs = require('fs');
+const colors = require('colors');
+const path = require('path');
+const jade = require('jade');
+const sass = require('node-sass');
+const babel = require('babel-core');
+const lr = require('livereload');
 
-var isErrored;
+let isErrored = false;
 
-var checkError = (arg, message) => {
+let checkError = (arg, message) => {
   if(!arg) {
     console.log(message);
     isErrored = true;
@@ -27,8 +27,8 @@ if(isErrored) {
   return;
 }
 
-var makeWatcher = (glob, transformer) => {
-  var watcher = chokidar.watch(glob, {
+let makeWatcher = (glob, transformer) => {
+  let watcher = chokidar.watch(glob, {
     persistent: true
   });
   watcher.on('add', transformer);
@@ -36,7 +36,7 @@ var makeWatcher = (glob, transformer) => {
   watcher.on('unlink', removeFile);
 }
 
-var writeOutput = (outputPath, result) => {
+let writeOutput = (outputPath, result) => {
   fs.writeFile(outputPath, result, 'utf8', (err) => {
     if(err) {
       console.log(colors.red('unable to write %s'), outputPath);
@@ -45,29 +45,29 @@ var writeOutput = (outputPath, result) => {
   }); 
 }
 
-var replaceExtension = (filePath, extension) => {
-  var currentExtension = path.extname(filePath);
+let replaceExtension = (filePath, extension) => {
+  let currentExtension = path.extname(filePath);
   return filePath.replace(currentExtension, extension);
 }
 
-var getPath = filePath => path.join(argv.d, filePath);
+let getPath = filePath => path.join(argv.d, filePath);
 
-var removeFile = filePath => {
+let removeFile = filePath => {
   fs.unlink(getPath(filePath), (err) => {
     console.log(colors.red('Unable to delete destination file %s'), filePath);
   });
 }
 
-var runJade = filePath => { 
+let runJade = filePath => { 
   // render the jade and overwrite the target file
-  var outputPath = replaceExtension(getPath(filePath), '.html');
+  let outputPath = replaceExtension(getPath(filePath), '.html');
   console.log(colors.green('Rendering Jade Template %s to %s'), filePath, outputPath);
-  var result = jade.renderFile(filePath, {pretty: true});
+  let result = jade.renderFile(filePath, {pretty: true});
   writeOutput(outputPath, result);
 }
 
-var runSass = filePath => {
-  var outputPath = replaceExtension(getPath(filePath), '.css');
+let runSass = filePath => {
+  let outputPath = replaceExtension(getPath(filePath), '.css');
   console.log(colors.green('Rendering sass file %s to %s'), filePath, outputPath);
   sass.render({
     file: filePath
@@ -80,8 +80,8 @@ var runSass = filePath => {
   });
 };
 
-var runBabel = filePath => {
-  var outputPath = replaceExtension(getPath(filePath), '.js');
+let runBabel = filePath => {
+  let outputPath = replaceExtension(getPath(filePath), '.js');
   console.log(colors.green('Transforming file %s via Babel %s'), filePath, outputPath);
   babel.transformFile(filePath, {presets: ["es2015"]}, (err, transformed) => {
     if(err) {
@@ -96,8 +96,8 @@ makeWatcher(argv.t, runJade);
 makeWatcher(argv.c, runSass);
 makeWatcher(argv.j, runBabel);
 
-var server = lr.createServer();
-var watchPath = path.join(argv.d);
+let server = lr.createServer();
+let watchPath = path.join(argv.d);
 console.log(colors.green('Watching for LR changes at %s') ,watchPath);
 server.watch(watchPath);
 
