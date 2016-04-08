@@ -2,13 +2,15 @@
 
 const argv = require('minimist')(process.argv.slice(2));
 const chokidar = require('chokidar');
-const fs = require('fs');
+const fs = require('fs-extra');
 const colors = require('colors');
 const path = require('path');
 const jade = require('jade');
 const sass = require('node-sass');
 const babel = require('babel-core');
 const lr = require('livereload');
+const bourbon = require('bourbon');
+const neat = require('bourbon-neat');
 
 let isErrored = false;
 
@@ -37,9 +39,9 @@ let makeWatcher = (glob, transformer) => {
 }
 
 let writeOutput = (outputPath, result) => {
-  fs.writeFile(outputPath, result, 'utf8', (err) => {
+  fs.outputFile(outputPath, result, 'utf8', (err) => {
     if(err) {
-      console.log(colors.red('unable to write %s'), outputPath);
+      console.log(colors.red('unable to write %s'), outputPath, err);
       return;
     }
   }); 
@@ -70,10 +72,11 @@ let runSass = filePath => {
   let outputPath = replaceExtension(getPath(filePath), '.css');
   console.log(colors.green('Rendering sass file %s to %s'), filePath, outputPath);
   sass.render({
-    file: filePath
+    file: filePath,
+    includePaths: bourbon.includePaths.concat(neat.includePaths)
   }, (err, result) => {
     if(err) {
-      console.log(colors.red('Unable to process scss file %s'), filePath);
+      console.log(colors.red('Unable to process scss file %s %s'), filePath, err);
       return;
     }
     writeOutput(outputPath, result.css);
