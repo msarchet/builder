@@ -1,6 +1,6 @@
 {
   "name": "builder",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Does watched compliation of es6, jade, and sass. Highly Opinionized",
   "main": "main.js",
   "author": "Michael Sarchet",
