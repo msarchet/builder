@@ -86,7 +86,7 @@ let runSass = filePath => {
 let runBabel = filePath => {
   let outputPath = replaceExtension(getPath(filePath), '.js');
   console.log(colors.green('Transforming file %s via Babel %s'), filePath, outputPath);
-  babel.transformFile(filePath, {presets: ["es2015"]}, (err, transformed) => {
+  babel.transformFile(filePath, {presets: ['es2015', 'react']}, (err, transformed) => {
     if(err) {
       console.log(colors.red('Error transforming file %s via babel %s'), filePath, err.message);
       return;
